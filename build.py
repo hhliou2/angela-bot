@@ -19,6 +19,7 @@ load_dotenv()
 # - Read/Post/Delete Messages
 # - Join/Speak in Voice Chat
 intents = discord.Intents.default()
+intents.members = True
 
 # Declare bot
 with open ("./config/commands.json") as f:
