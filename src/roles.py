@@ -13,8 +13,8 @@ class Roles(commands.Cog):
     async def on_member_join(self, member):
         await member.send("Welcome, fren :D")
         role = discord.utils.get(member.guild.roles, name="new member")
-        await member.add_roles(member, role)
+        await member.add_roles(role)
 
 
 def setup(bot):
-    bot.add_Cog(Roles(bot))
+    bot.add_cog(Roles(bot))

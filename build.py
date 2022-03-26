@@ -18,7 +18,7 @@ load_dotenv()
 # - Make/Read Reactions
 # - Read/Post/Delete Messages
 # - Join/Speak in Voice Chat
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.members = True
 
 # Declare bot
@@ -32,12 +32,13 @@ bot = commands.Bot(command_prefix = cfg["command_prefix"], intents=intents)
 async def on_ready():
     print("Bot going online")
     src.messaging.setup(bot)
+    src.roles.setup(bot)
 
 # Send bot online with token
 try:
     bot.run(os.getenv("TOKEN"))
 except Exception as e:
-    print("Error. Check bot token.")
+    print(f"Error. Check bot token. {e}")
     time.sleep(5)
     exit(1)
 
