@@ -3,6 +3,7 @@ import os
 import logging
 import json
 import time
+import sqlite3
 
 import discord
 from discord.ext import commands
@@ -33,6 +34,26 @@ async def on_ready():
     print("Bot going online")
     src.messaging.setup(bot)
     src.roles.setup(bot)
+    src.quotes.setup(bot)
+
+    # Initialize SQL Database if not up
+    try:
+        c = sqlite3.connect('yga.db')
+        cursor = c.cursor()
+    except sqlite3.Error as error:
+        print ('SQL Error - ', error)
+        exit(1)
+
+    table = """
+            CREATE TABLE IF NOT EXISTS QUOTES (
+            QUOTE TEXT,
+            USERNAME VARCHAR(255),
+            DATE TEXT
+            );
+            """
+    cursor.execute(table)
+    c.commit()
+    c.close()
 
 # Send bot online with token
 try:
