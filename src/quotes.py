@@ -11,7 +11,7 @@ class Quotes(commands.Cog):
         self.bot = bot
 
     @commands.command(pass_context=True)
-    @commands.has_any_role("Moderator", "Admin")
+    @commands.has_any_role("Yummy Admins", "Yummy Mods")
     async def addQuote(self, ctx):
 
         await ctx.channel.send("Please tell me the quote.")
