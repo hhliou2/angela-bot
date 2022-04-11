@@ -9,6 +9,7 @@ reactions = ['\N{THUMBS UP SIGN}', '\N{THUMBS DOWN SIGN}']
 ndict = {}
 cdict = {}
 userreact = None
+timeout = 30    # time in seconds to wait before deleting message
 # client = discord.client
 
 
@@ -42,8 +43,9 @@ class Roles(commands.Cog):
         cdict[ctx.author.id] = await ctx.channel.send('React to me to choose your colour!')
         for colour in colours:
             await cdict[ctx.author.id].add_reaction(colour[0])
-        await asyncio.sleep(60)
-        await cdict[ctx.author.id].delete()
+        await asyncio.sleep(timeout)
+        if ctx.author.id in cdict.keys():
+            await cdict[ctx.author.id].delete()
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -58,8 +60,9 @@ class Roles(commands.Cog):
         ndict[ctx.author.id] = await ctx.channel.send('React to me to choose your NSFW role!')
         for i in nsfw:
             await ndict[ctx.author.id].add_reaction(i[0])
-        await asyncio.sleep(60)
-        await cdict[ctx.author.id].delete()
+        await asyncio.sleep(timeout)
+        if ctx.author.id in cdict.keys():
+            await cdict[ctx.author.id].delete()
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -78,9 +81,9 @@ class Roles(commands.Cog):
             for userrole in user.roles:
                 if userrole.name in colours.values():
                     await user.remove_roles(userrole)
-                    print(f'remove_role success {userrole}')
+                    print(f'remove_role success {userrole}, {user.name}')
             await user.add_roles(role)
-            print(f'add_role success {role}')
+            print(f'add_role success {role}, {user.name}')
             await asyncio.sleep(1)
             if user.id in cdict.keys():
                 await cdict[user.id].delete()
@@ -94,23 +97,13 @@ class Roles(commands.Cog):
             for userrole in user.roles:
                 if userrole.name in nsfw.values():
                     await user.remove_roles(userrole)
-                    print(f'remove_role success {userrole}')
+                    print(f'remove_role success {userrole}, {user.name}')
             await user.add_roles(role)
-            print(f'add_role success {role}')
+            print(f'add_role success {role}, {user.name}')
             await asyncio.sleep(1)
             if user.id in ndict.keys():
                 await ndict[user.id].delete()
                 ndict.pop(user.id)
-
-    @colour.error                         # stop the bot from throwing an error when it tries to delete a message twice
-    async def info_error(self, ctx, error):
-        if isinstance(error, commands.BadArgument):
-            print('already deleted :)')
-
-    @nsfw.error                           # ditto
-    async def info_error(self, ctx, error):
-        if isinstance(error, commands.BadArgument):
-            print('already deleted :)')
 
 
 def setup(bot):
