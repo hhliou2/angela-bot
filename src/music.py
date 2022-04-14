@@ -62,7 +62,7 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["stop", "disconnect"])
     @commands.guild_only()
-    @commands.has_permissions(administrator=True)
+    # @commands.has_permissions(administrator=True)
     async def leave(self, ctx):
         client = ctx.guild.voice_client
         state = self.get_state(ctx.guild)
@@ -178,7 +178,7 @@ class Music(commands.Cog):
     @commands.command(aliases=["cq", "clr", "clear"])
     @commands.guild_only()
     @commands.check(audio_playing)
-    @commands.has_permissions(administrator=True)
+    # @commands.has_permissions(administrator=True)
     async def clearqueue(self, ctx):
         state = self.get_state(ctx.guild)
         state.playlist = []
@@ -186,7 +186,7 @@ class Music(commands.Cog):
     @commands.command(aliases=["jq", "mv", "move"])
     @commands.guild_only()
     @commands.check(audio_playing)
-    @commands.has_permissions(administrator=True)
+    # @commands.has_permissions(administrator=True)
     async def jumpqueue(self, ctx, song: int, new_index: int):
         # move song to new location in queue
         state = self.get_state(ctx.guild)
