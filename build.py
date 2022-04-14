@@ -35,6 +35,7 @@ async def on_ready():
     src.messaging.setup(bot)
     src.roles.setup(bot)
     src.quotes.setup(bot)
+    src.music.setup(bot)
 
     # Initialize SQL Database if not up
     try:
