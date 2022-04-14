@@ -15,7 +15,7 @@ class Quotes(commands.Cog):
         self.bot = bot
 
     # Add quote to DB (Admin only)
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=["addquote"])
     @commands.has_any_role(admin_roles["admin"], admin_roles["mod"])
     async def addQuote(self, ctx):
 
@@ -57,6 +57,10 @@ class Quotes(commands.Cog):
             await ctx.send("You cannot add quotes without mod privileges.", delete_after=5)
             await ctx.message.delete(delay=5)
 
+    # View quotes based on query
+    @commands.command(pass_context=True)
+    async def quote(self, ctx):
+        print("xd")
 
 # Give main bot all commands in this file
 def setup(bot):
