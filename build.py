@@ -26,6 +26,9 @@ intents.members = True
 with open ("./config/commands.json") as f:
     cfg = json.load(f)
 
+with open ("./config/database.json") as f:
+    database_cfg = json.load(f)
+
 bot = commands.Bot(command_prefix = cfg["command_prefix"], intents=intents)
 
 # Let user know bot is online, get all commands
@@ -39,7 +42,7 @@ async def on_ready():
 
     # Initialize SQL Database if not up
     try:
-        c = sqlite3.connect('yga.db')
+        c = sqlite3.connect(database_cfg['database_path'])
         cursor = c.cursor()
     except sqlite3.Error as error:
         print ('SQL Error - ', error)
