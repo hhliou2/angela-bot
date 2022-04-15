@@ -41,7 +41,7 @@ class Quotes(commands.Cog):
 
             conn = sqlite3.connect("yga.db")
             cursor = conn.cursor()
-            query = f"INSERT INTO QUOTES VALUES ('{quote.content}', '{user.content}', datetime('now'))"
+            query = f"INSERT INTO QUOTES VALUES ('{quote.content}', '{user.content}', datetime('now'));"
             cursor.execute(query)
             conn.commit()
             conn.close()
@@ -60,7 +60,37 @@ class Quotes(commands.Cog):
     # View quotes based on query
     @commands.command(pass_context=True)
     async def quote(self, ctx):
-        print("xd")
+        
+        # Check if Full Text Search (FTS) table exists
+        conn = sqlite3.connect("yga.db")
+        cursor = conn.cursor()
+        query = "SELECT COUNT(*) FROM SQLITE_MASTER WHERE TYPE='table' AND NAME='quotes_fts';"
+        cursor.execute(query)
+        table_exists = cursor.fetchone()[0]
+
+        # Create an FTS table if it doesn't exist, as well as insert/delete triggers
+        if table_exists == 0:
+            query = """
+            CREATE VIRTUAL TABLE quotes_fts USING FTS5(quote, username, date);
+            INSERT INTO quotes_fts (quote, username, date) SELECT quote, username, date FROM quotes;
+            
+            CREATE TRIGGER quotes_after_insert AFTER INSERT ON quotes
+            BEGIN
+                INSERT INTO quotes_fts (quote, username, date)
+                VALUES (new.quote, new.username, new.date);
+            END;
+
+            CREATE TRIGGER quotes_after_delete AFTER DELETE ON quotes
+            FOR EACH ROW
+            BEGIN
+                DELETE FROM quotes_fts WHERE (old.quote = quote);
+            END;
+            """
+            cursor.executescript(query)
+            conn.commit()
+        conn.close()
+
+        
 
 # Give main bot all commands in this file
 def setup(bot):
