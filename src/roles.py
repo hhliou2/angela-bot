@@ -15,6 +15,8 @@ timeout = 30    # time in seconds to wait before deleting message
 
 with open("./config/nsfw.json", encoding='utf-8') as f:
     nsfw = json.load(f)
+with open("./config/other_roles.json", encoding='utf-8') as f:
+    other_roles = json.load(f)
 
 
 class Roles(commands.Cog):
@@ -24,7 +26,7 @@ class Roles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        role = discord.utils.get(member.guild.roles, name="new member")
+        role = discord.utils.get(member.guild.roles, name=other_roles["new_member_name"])
         await member.add_roles(role)
 
     @commands.command(aliases=['reloadcolors'])
@@ -98,7 +100,7 @@ class Roles(commands.Cog):
             await ctx.send('Could not find that channel.')
             return
 
-        message = await welcome_channel.fetch_message(welcome_channel.last_message_id)
+        message = (await welcome_channel.history(limit=1).flatten())[0]
         if message:
             for emote in nsfw['emotes'].keys():
                 await message.add_reaction(emote)
