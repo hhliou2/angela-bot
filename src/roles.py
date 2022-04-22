@@ -108,11 +108,9 @@ class Roles(commands.Cog):
         
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        print("I see a reaction")
         if payload.member.bot:
             return
         if payload.emoji.name in nsfw['emotes'] and payload.channel_id == nsfw['channel_id']:
-            print("this is in the right channel")
             await self.nsfw_react(payload)
 
     async def nsfw_react(self, payload):
@@ -126,10 +124,12 @@ class Roles(commands.Cog):
         await payload.member.add_roles(role)
         print(f'add_role success {role}, {payload.member.name}')
 
-        welcome_channel = self.bot.get_channel(int(nsfw["channel_id"]))
-        message = await welcome_channel.fetch_message(welcome_channel.last_message_id)
-        await message.remove_reaction(payload.emoji.name, payload.member)
-        await asyncio.sleep(1)
+        welcome_channel = self.bot.get_channel(payload.channel_id)
+        message = (await welcome_channel.history(limit=1).flatten())[0]
+        for emote in nsfw['emotes'].keys():
+            if emote != payload.emoji.name:
+                await message.remove_reaction(emote, payload.member)
+                await asyncio.sleep(1)
 
 
 def setup(bot):
