@@ -15,6 +15,8 @@ class Messaging(commands.Cog):
     async def gay(self, ctx):
         if (ctx.author.id == 352964311423123458 or ctx.author.id == 194902708535164934):
             gayness = random.randint(90,100)
+        elif (ctx.author.id == 216683868244148225):
+            gayness = random.randint(100, 200)
         else:
             gayness = random.randint(0,100)
 
