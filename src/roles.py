@@ -13,7 +13,7 @@ timeout = 30    # time in seconds to wait before deleting message
 # client = discord.client
 
 
-with open("./config/nsfw.json") as f:
+with open("./config/nsfw.json", encoding='utf-8') as f:
     nsfw = json.load(f)
 
 
@@ -87,48 +87,49 @@ class Roles(commands.Cog):
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.has_permissions(administrator=True)
     async def nsfw(self, ctx):
         print('printing nsfw message')
         await ctx.message.delete()
-        global msg
-        global ndict
-        while ctx.author.id in ndict.keys():
-            print(f'user {ctx.author} already has request opened')
-            ndict.pop(ctx.author.id)
-        embed = discord.Embed(title='React to me to choose your NSFW role!', description=f'''
-        🥉 = SFW \n
-        🥈 = NSFW \n
-        🥇 = NSFW + Rule34
-        ''')
-        ndict[ctx.author.id] = await ctx.channel.send(embed=embed)
-        for i in nsfw:
-            await ndict[ctx.author.id].add_reaction(i[0])
-        await asyncio.sleep(timeout)
-        if ctx.author.id in ndict.keys():
-            await ndict[ctx.author.id].delete()
 
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        if user.bot or user.id not in ndict.keys():
+        # Get last message sent to a "Welcome channel"
+        welcome_channel = self.bot.get_channel(int(nsfw["channel_id"]))
+        if welcome_channel is None:
+            await ctx.send('Could not find that channel.')
             return
-        if reaction.emoji in nsfw and reaction.message == ndict[user.id]:
-            await self.nsfw_react(reaction, user)
 
-    async def nsfw_react(self, reaction, user):
+        message = await welcome_channel.fetch_message(welcome_channel.last_message_id)
+        if message:
+            for emote in nsfw['emotes'].keys():
+                await message.add_reaction(emote)
+        else:
+            await ctx.send('Could not find any message in the specified channel')
+
+        
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        print("I see a reaction")
+        if payload.member.bot:
+            return
+        if payload.emoji.name in nsfw['emotes'] and payload.channel_id == nsfw['channel_id']:
+            print("this is in the right channel")
+            await self.nsfw_react(payload)
+
+    async def nsfw_react(self, payload):
         role = None
-        if reaction.emoji in nsfw:
-            role = discord.utils.get(user.guild.roles, name=nsfw[reaction.emoji])
-        if reaction.message == ndict[user.id]:
-            for userrole in user.roles:
-                if userrole.name in nsfw.values():
-                    await user.remove_roles(userrole)
-                    print(f'remove_role success {userrole}, {user.name}')
-            await user.add_roles(role)
-            print(f'add_role success {role}, {user.name}')
-            await asyncio.sleep(1)
-            if user.id in ndict.keys():
-                await ndict[user.id].delete()
-                ndict.pop(user.id)
+        if payload.emoji.name in nsfw['emotes']:
+            role = discord.utils.get(payload.member.guild.roles, name=nsfw['emotes'][payload.emoji.name])
+        for userrole in payload.member.roles:
+            if userrole.name in nsfw['emotes'].values():
+                await payload.member.remove_roles(userrole)
+                print(f'remove_role success {userrole}, {payload.member.name}')
+        await payload.member.add_roles(role)
+        print(f'add_role success {role}, {payload.member.name}')
+
+        welcome_channel = self.bot.get_channel(int(nsfw["channel_id"]))
+        message = await welcome_channel.fetch_message(welcome_channel.last_message_id)
+        await message.remove_reaction(payload.emoji.name, payload.member)
+        await asyncio.sleep(1)
 
 
 def setup(bot):
