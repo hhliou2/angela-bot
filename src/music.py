@@ -7,8 +7,15 @@ import yt_dlp
 import math
 import json
 from urllib import request
-from .video import Video
+from .video import Video, Playlist, Video_Full
 import ffmpeg
+
+YTDL_OPTS = {
+    "default_search": "ytsearch",
+    "format": "bestaudio/best",
+    "quiet": True,
+    "extract_flat": "in_playlist"
+}
 
 FFMPEG_BEFORE_OPTS = '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'
 # ffmpeg args go here ^
@@ -143,7 +150,8 @@ class Music(commands.Cog):
 
         def after_playing(err):
             if len(state.playlist) > 0:
-                next_song = state.playlist.pop(0)
+                next_song_short = state.playlist.pop(0)
+                next_song = Video_Full(next_song_short.video_url, next_song_short.requested_by)
                 self._play_song(client, state, next_song)
             else:
                 asyncio.run_coroutine_threadsafe(client.disconnect(), self.bot.loop)
@@ -162,13 +170,18 @@ class Music(commands.Cog):
     @commands.check(audio_playing)
     async def queue(self, ctx):
         state = self.get_state(ctx.guild)
-        await ctx.send(self._queue_text(state.playlist))
+        numbers_per_msg = 15
+        for i in range(0, len(state.playlist), numbers_per_msg):
+            await ctx.send(self._queue_text(i, len(state.playlist), state.playlist[i:i+numbers_per_msg]))
 
-    def _queue_text(self, queue):
+    def _queue_text(self, cur, total, queue):
         if len(queue) > 0:
-            message = [f"{len(queue)} songs in queue:"]
+            if cur == 0:
+                message = [f"{total} songs in queue:"]
+            else:
+                message = [""]
             message += [
-                f"  {index+1}. **{song.title}** (requested by **{song.requested_by.name}**)"
+                f"  {index+1+cur}. **{song.title}** (requested by **{song.requested_by.name}**)"
                 for (index, song) in enumerate(queue)
             ]
             return "\n".join(message)
@@ -194,7 +207,9 @@ class Music(commands.Cog):
             song = state.playlist.pop(song - 1)
             state.playlist.insert(new_index - 1, song)
 
-            await ctx.send(self._queue_text(state.playlist))
+            numbers_per_msg = 15
+            for i in range(0, len(state.playlist), numbers_per_msg):
+                await ctx.send(self._queue_text(i, len(state.playlist), state.playlist[i:i+numbers_per_msg]))
         else:
             # TODO: error message for invalid index
             pass
@@ -206,25 +221,33 @@ class Music(commands.Cog):
         state = self.get_state(ctx.guild)
         if client and client.channel:
             try:
-                video = Video(url, ctx.author)
+                pl = Playlist(url, ctx.author)
             except youtube_dl.DownloadError as e:
                 logging.warning(f"Error downloading video: {e}")
                 await ctx.send("An error occured when downloading the video")
                 return
-            state.playlist.append(video)
-            message = await ctx.send("Added to queue", embed=video.get_embed())
+            state.playlist.extend(pl.playlist)
+            if len(pl.playlist) > 1:
+                message = await ctx.send("Added to queue", embed=pl.get_embed())
+            else:
+                message = await ctx.send("Added to queue", embed=pl.playlist[0].get_embed())
             await self._add_reaction_controls(message)
         else:
             if ctx.author.voice is not None and ctx.author.voice.channel is not None:
                 channel = ctx.author.voice.channel
                 try:
-                    video = Video(url, ctx.author)
+                    pl = Playlist(url, ctx.author)
                 except youtube_dl.DownloadError as e:
                     await ctx.send("An error occured when downloading the video")
                     return
                 client = await channel.connect()
+                video = Video_Full(pl.playlist[0].video_url, ctx.author)
+                state.playlist.extend(pl.playlist[1:])
                 self._play_song(client, state, video)
-                message = await ctx.send("", embed=video.get_embed())
+                if len(pl.playlist) > 1:
+                    message = await ctx.send("", embed=pl.get_embed())
+                else:
+                    message = await ctx.send("", embed=video.get_embed())
                 await self._add_reaction_controls(message)
                 logging.info(f"Now playing '{video.title}'")
             else:
