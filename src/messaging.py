@@ -13,7 +13,7 @@ class Messaging(commands.Cog):
 
     # Gives a user a Gayness rating of 0-100. Note that Baraboomba is defaulted to the 90-100 range.
     @commands.command()
-    async def gay(self, ctx, *, user=None):
+    async def gay(self, ctx, *, user=None):     # optionally passes in a user argument
         if user:
             gayness = random.randint(0, 100)
             embed = discord.Embed(description=f'**{user}** is ==> **{gayness}%** gay', color=11342935)
