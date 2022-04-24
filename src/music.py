@@ -9,6 +9,7 @@ import json
 from urllib import request
 from .video import Video, Playlist, Video_Full
 import ffmpeg
+import random
 
 YTDL_OPTS = {
     "default_search": "ytsearch",
@@ -213,6 +214,14 @@ class Music(commands.Cog):
         else:
             # TODO: error message for invalid index
             pass
+
+    @commands.command(aliases=['sh'])
+    @commands.guild_only()
+    @commands.check(audio_playing)
+    async def shuffle(self, ctx):
+        state = self.get_state(ctx.guild)
+        random.shuffle(state.playlist)
+
 
     @commands.command(brief="Plays audio from <url>", aliases=["p"])
     @commands.guild_only()
