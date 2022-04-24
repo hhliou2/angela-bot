@@ -1,3 +1,5 @@
 {
-	"command_prefix": "!"
+	"command_prefix": "!",
+	"application_id": 967062313930743919,
+	"server_id": 859531068252356608
 }

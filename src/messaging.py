@@ -35,6 +35,6 @@ class Messaging(commands.Cog):
 
 
 # Give main bot all commands in this file
-def setup(bot):
-    bot.add_cog(Messaging(bot))
+async def setup(bot):
+    await bot.add_cog(Messaging(bot))
 

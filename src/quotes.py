@@ -46,7 +46,7 @@ class Quotes(commands.Cog):
 
             conn = sqlite3.connect(database_cfg["database_path"])
             cursor = conn.cursor()
-            final_quote = quote.content.replace("'", "''").replace('"', '""')
+            final_quote = quote.content.replace("'", "''")
             query = f"INSERT INTO QUOTES VALUES ('{final_quote}', '{user.content}', strftime('%m/%d/%Y', date('now')));"
             cursor.execute(query)
             conn.commit()
@@ -246,9 +246,6 @@ class Quotes(commands.Cog):
             await ctx.send("Error: no search term provided. Please try again using `!quote [search_term]` (i.e. !quote van)", delete_after=5)
             await ctx.message.delete(delay=5)
 
-###################################################################### 
-# Give main bot all commands in this file
-###################################################################### 
-def setup(bot):
-    bot.add_cog(Quotes(bot))
+async def setup(bot):
+    await bot.add_cog(Quotes(bot))
 

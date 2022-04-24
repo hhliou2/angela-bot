@@ -28,7 +28,7 @@ class Video:
             title=self.title, description=self.uploader, url=self.video_url)
         embed.set_footer(
             text=f"Requested by {self.requested_by.name}",
-            icon_url=self.requested_by.avatar_url)
+            icon_url=self.requested_by.avatar)
         return embed
 
 class Video_Full:
@@ -68,7 +68,7 @@ class Video_Full:
             title=self.title, description=self.uploader, url=self.video_url)
         embed.set_footer(
             text=f"Requested by {self.requested_by.name}",
-            icon_url=self.requested_by.avatar_url)
+            icon_url=self.requested_by.avatar)
         if self.thumbnail:
             embed.set_thumbnail(url=self.thumbnail)
         return embed
@@ -101,5 +101,5 @@ class Playlist:
             title=self.title, description=self.uploader, url=self.playlist_url)
         embed.set_footer(
             text=f"Requested by {self.requested_by.name}",
-            icon_url=self.requested_by.avatar_url)
+            icon_url=self.requested_by.avatar)
         return embed

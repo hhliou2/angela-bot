@@ -100,7 +100,7 @@ class Roles(commands.Cog):
             await ctx.send('Could not find that channel.')
             return
 
-        message = (await welcome_channel.history(limit=1).flatten())[0]
+        message = [message async for message in welcome_channel.history(limit=1)][0]
         if message:
             for emote in nsfw['emotes'].keys():
                 await message.add_reaction(emote)
@@ -127,12 +127,12 @@ class Roles(commands.Cog):
         print(f'add_role success {role}, {payload.member.name}')
 
         welcome_channel = self.bot.get_channel(payload.channel_id)
-        message = (await welcome_channel.history(limit=1).flatten())[0]
+        message = [message async for message in welcome_channel.history(limit=1)][0]
         for emote in nsfw['emotes'].keys():
             if emote != payload.emoji.name:
                 await message.remove_reaction(emote, payload.member)
                 await asyncio.sleep(1)
 
 
-def setup(bot):
-    bot.add_cog(Roles(bot))
+async def setup(bot):
+    await bot.add_cog(Roles(bot))

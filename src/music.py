@@ -329,7 +329,6 @@ class Music(commands.Cog):
         for control in controls:
             await message.add_reaction(control)
 
-
 class GuildState:
     def __init__(self):
         self.volume = 1.0
@@ -340,6 +339,6 @@ class GuildState:
         def is_requester(self, user):
             return self.now_playing.requested_by == user
 
+async def setup(bot):
+    await bot.add_cog(Music(bot, config))
 
-def setup(bot):
-    bot.add_cog(Music(bot, config))
