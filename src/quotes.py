@@ -46,7 +46,8 @@ class Quotes(commands.Cog):
 
             conn = sqlite3.connect(database_cfg["database_path"])
             cursor = conn.cursor()
-            query = f"INSERT INTO QUOTES VALUES ('{quote.content}', '{user.content}', strftime('%m/%d/%Y', date('now')));"
+            final_quote = quote.content.replace("'", "''").replace('"', '""')
+            query = f"INSERT INTO QUOTES VALUES ('{final_quote}', '{user.content}', strftime('%m/%d/%Y', date('now')));"
             cursor.execute(query)
             conn.commit()
             conn.close()
