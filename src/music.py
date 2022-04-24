@@ -174,6 +174,8 @@ class Music(commands.Cog):
         numbers_per_msg = 15
         for i in range(0, len(state.playlist), numbers_per_msg):
             await ctx.send(self._queue_text(i, len(state.playlist), state.playlist[i:i+numbers_per_msg]))
+        if len(state.playlist) == 0:
+            await ctx.send('There is no music in the queue')
 
     def _queue_text(self, cur, total, queue):
         if len(queue) > 0:
@@ -222,6 +224,32 @@ class Music(commands.Cog):
         state = self.get_state(ctx.guild)
         random.shuffle(state.playlist)
 
+    @commands.command(aliases=['ps'])
+    @commands.guild_only()
+    @commands.check(audio_playing)
+    async def playskip(self, ctx, *, url):
+        client = ctx.guild.voice_client
+        state = self.get_state(ctx.guild)
+        state.playlist[:0] = Playlist(url, ctx.author).playlist
+        client.stop()
+        pl = Playlist(url, ctx.author)
+        if len(pl.playlist) > 1:
+            message = await ctx.send("Playskipping", embed=pl.get_embed())
+        else:
+            message = await ctx.send("Playskipping", embed=pl.playlist[0].get_embed())
+
+    @commands.command(aliases=['pt'])
+    @commands.guild_only()
+    @commands.check(audio_playing)
+    async def playtop(self, ctx, *, url):
+        client = ctx.guild.voice_client
+        state = self.get_state(ctx.guild)
+        state.playlist[:0] = Playlist(url, ctx.author).playlist
+        pl = Playlist(url, ctx.author)
+        if len(pl.playlist) > 1:
+            message = await ctx.send("Added to top of queue", embed=pl.get_embed())
+        else:
+            message = await ctx.send("Added to top of queue", embed=pl.playlist[0].get_embed())
 
     @commands.command(brief="Plays audio from <url>", aliases=["p"])
     @commands.guild_only()
