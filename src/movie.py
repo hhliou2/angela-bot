@@ -7,6 +7,7 @@ from discord.ext import commands
 movies = {}
 scheduler = AsyncIOScheduler()
 scheduler.start()
+movierole = 'Clubhouse Member'
 
 
 class Movie(commands.Cog):
@@ -32,6 +33,7 @@ class Movie(commands.Cog):
                 print(f'Error: tomention is empty {tomention}')
 
     @commands.command(aliases=['mn'])
+    @commands.has_role(movierole)
     async def movienight(self, ctx):
         mlist = []
         if movies:
@@ -45,8 +47,8 @@ class Movie(commands.Cog):
             embed = discord.Embed(title='**No Movies Available!**', description=f'To add a movie, type `!newmovie`')
             await ctx.channel.send(embed=embed)
 
-
     @commands.command(aliases=[])
+    @commands.has_role(movierole)
     async def watch(self, ctx, *, signup):
         lp = True
         movtemp = None
@@ -81,6 +83,7 @@ class Movie(commands.Cog):
                 lp = False
 
     @commands.command(aliases=['ww'])
+    @commands.has_role(movierole)
     async def whoswatching(self, ctx, *, choice):
         watching = []
         movtemp = None
@@ -99,6 +102,7 @@ class Movie(commands.Cog):
             await ctx.channel.send(f'Invalid Selection')
 
     @commands.command(aliases=['nm'])
+    @commands.has_role(movierole)
     async def newmovie(self, ctx):
         await ctx.channel.send("Alright! What's the title of the movie?")
         title = await self.bot.wait_for('message', check=lambda message: message.author == ctx.author)
@@ -130,6 +134,7 @@ class Movie(commands.Cog):
             await ctx.channel.send('Canceled operations')
 
     @commands.command(aliases=['rmv'])
+    @commands.has_permissions(administrator=True)
     async def removemovie(self, ctx, *, choice):
         delete = None
         for film in movies:

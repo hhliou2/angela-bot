@@ -56,7 +56,7 @@ class Roles(commands.Cog):
             Example: !setcolour Gamer Girl''')
             await ctx.send(embed=instructions)
             full_roles = [discord.utils.get(ctx.guild.roles, id=role_id) for role_id in clist]
-            embed = discord.Embed(title='Colours:', description=f'\n'.join([role.mention for role in full_roles]))     # put colours into embed message
+            embed = discord.Embed(title='Colours:', description=f'\n'.join([role.mention for role in full_roles]))    # put colours into embed message
             await ctx.send(embed=embed)
             with open("./config/colours.txt", mode='w+') as outfile:
                 for role in clist:
