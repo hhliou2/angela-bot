@@ -42,8 +42,7 @@ class Roles(commands.Cog):
                 roleid = f.readline()
         print(clist)
 
-
-    @commands.command(aliases=['buildcolors'])      # TODO: save built colours to file
+    @commands.command(aliases=['buildcolors'])
     @commands.has_permissions(administrator=True)
     async def buildcolours(self, ctx):
         await ctx.message.delete()
@@ -65,7 +64,7 @@ class Roles(commands.Cog):
             print('Colours built successfully!')
             print(clist)
         else:
-            print('ERROR: No suitable roles. Colour roles must start with "clr"')
+            print('ERROR: No suitable roles. Colour roles must start with "[clr]"')
 
     @commands.command(aliases=['setcolor'])
     async def setcolour(self, ctx, *, clr):
