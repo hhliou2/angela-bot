@@ -217,6 +217,20 @@ class Music(commands.Cog):
             # TODO: error message for invalid index
             pass
 
+    @commands.command(aliases=['rm'])
+    @commands.guild_only()
+    @commands.check(audio_playing)
+    async def remove(self, ctx, song: int):
+        state = self.get_state(ctx.guild)
+        if 1 <= song<= len(state.playlist):
+            state.playlist.pop(song - 1)
+            numbers_per_msg = 15
+            for i in range(0, len(state.playlist), numbers_per_msg):
+                await ctx.send(self._queue_text(i, len(state.playlist), state.playlist[i:i+numbers_per_msg]))
+        else:
+            # TODO: error message for invalid index
+            pass
+
     @commands.command(aliases=['sh'])
     @commands.guild_only()
     @commands.check(audio_playing)

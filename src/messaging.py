@@ -28,6 +28,10 @@ class Messaging(commands.Cog):
             embed = discord.Embed(description=f'**{ctx.author.name}** is ==> **{gayness}%** gay', color=11342935)
             await ctx.channel.send(embed=embed)
 
+    @commands.command()
+    async def rofl(self, ctx):
+        await ctx.channel.send('**ROFLCOPTER** https://c.tenor.com/hYZmNf2vDd0AAAAC/roflcopter.gif')
+
     # Returns the phrase "Shut the fuck up Baraboomba" along with a silenced seagull
     @commands.command()
     async def baraboomba(self, ctx):
