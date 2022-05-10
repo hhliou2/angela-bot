@@ -4,6 +4,9 @@ import random
 import discord
 from discord.ext import commands
 
+serverip = '142.126.153.140:6969'
+clubhouse = 'Clubhouse Member'
+
 
 class Messaging(commands.Cog):
 
@@ -37,6 +40,10 @@ class Messaging(commands.Cog):
     async def baraboomba(self, ctx):
         await ctx.channel.send("Shut the fuck up baraboomba https://imgur.com/a/S0l1n2P")
 
+    @commands.command()
+    @commands.has_role(clubhouse)
+    async def minecraft(self, ctx):
+        await ctx.channel.send(f'Minecraft server IP: {serverip}')
 
 # Give main bot all commands in this file
 async def setup(bot):

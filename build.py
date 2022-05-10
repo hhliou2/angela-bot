@@ -44,6 +44,7 @@ class AngelaBot(commands.Bot):
         await self.load_extension(f"src.quotes")
         await self.load_extension(f"src.music")
         await self.load_extension(f"src.movie")
+        await self.load_extension(f"src.tournament")
         await bot.tree.sync(guild = discord.Object(id = cfg["server_id"]))
         
 
