@@ -45,7 +45,6 @@ class AngelaBot(commands.Bot):
         await self.load_extension(f"src.music")
         await self.load_extension(f"src.movie")
         await self.load_extension(f"src.tournament")
-        await bot.tree.sync(guild = discord.Object(id = cfg["server_id"]))
         
 
     async def on_ready(self):
@@ -71,11 +70,5 @@ class AngelaBot(commands.Bot):
         c.close()
 
 # Send bot online with token
-try:
-    bot = AngelaBot()
-    bot.run(os.getenv("TOKEN"))
-except Exception as e:
-    print(f"Error. Check bot token. {e}")
-    time.sleep(5)
-    exit(1)
-
+bot = AngelaBot()
+bot.run(os.getenv("TOKEN"))
