@@ -4,7 +4,7 @@ import random
 import discord
 from discord.ext import commands
 
-serverip = '142.126.153.140:6969'
+serverip = '184.145.65.124:6969'
 clubhouse = 'Clubhouse Member'
 
 
