@@ -1,8 +1,7 @@
 {
     "emotes": {
         "\uD83C\uDF4F": "Vanilla Account",
-        "\uD83C\uDF46": "NSFW Account",
-        "\uD83D\uDCA6": "NSFW+ Account"
+        "\uD83C\uDF46": "NSFW Account"
     },
     "channel_id": 987184645554700428
 }
